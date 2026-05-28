@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Social Health | Mobile Log</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Bebas+Neue&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* === TED STAGE (MOBILE THEME) === */
+        :root {
+            --bg-lofi: #000000;      
+            --bg-panel: #111111;     
+            --bg-paper: #1a1a1a;     
+            --accent-red: #e62b1e; 
+            --accent-green: #10b981;
+            --text-main: #ffffff;    
+            --text-muted: #888888;   
+            --border-soft: #333333;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #050505; 
+            color: var(--text-main);
+            display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .font-impact { font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px;}
+        .font-code { font-family: 'JetBrains Mono', monospace; }
+
+        #mobile-app {
+            width: 100%; max-width: 430px; 
+            height: 100vh; max-height: 932px;
+            background-color: var(--bg-lofi);
+            position: relative; display: flex; flex-direction: column; overflow: hidden;
+            box-shadow: 0 0 50px rgba(230, 43, 30, 0.1);
+            background-image: radial-gradient(circle at 50% 10%, rgba(230, 43, 30, 0.1) 0%, transparent 60%);
+        }
+
+        header { flex-shrink: 0; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px); z-index: 50; border-bottom: 2px solid var(--accent-red); }
+        main { flex-grow: 1; overflow-y: auto; padding: 1.5rem; position: relative; }
+
+        .progress-track { width: 100%; height: 4px; background: #222; overflow: hidden; margin-top: 15px; }
+        .progress-fill { height: 100%; background: var(--accent-red); transition: width 0.3s ease; box-shadow: 0 0 10px rgba(230, 43, 30, 0.6); }
+
+        .question-card { background: var(--bg-panel); border: 1px solid var(--border-soft); border-radius: 8px; padding: 1.5rem; animation: slideIn 0.3s ease forwards; box-shadow: 0 10px 25px rgba(0,0,0,0.8); }
+        .opt-btn { width: 100%; text-align: left; background: var(--bg-lofi); border: 1px solid var(--border-soft); padding: 1.2rem 1rem; border-radius: 4px; margin-bottom: 0.75rem; font-weight: 600; font-size: 1.05rem; transition: all 0.2s; display: flex; justify-content: space-between; align-items: center; }
+        .opt-btn:active { transform: scale(0.98); }
+        .opt-btn.selected-correct { border-color: var(--accent-green); background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+        .opt-btn.selected-error { border-color: var(--accent-red); background: rgba(230, 43, 30, 0.15); color: var(--accent-red); }
+
+        .btn-primary { width: 100%; background: var(--accent-red); color: white; padding: 1.2rem; border-radius: 4px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; text-align: center; border: none; transition: all 0.2s; box-shadow: 0 4px 15px rgba(230, 43, 30, 0.3); }
+        .btn-primary:active { background: #ff3b2e; transform: scale(0.96); }
+
+        .type-input { width: 100%; background: #000; border: 1px solid #444; color: white; padding: 1.2rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; text-align: center; margin-bottom: 1rem; font-size: 1.1rem; font-weight: bold; border-bottom: 3px solid var(--accent-red);}
+        .type-input:focus { outline: none; background: rgba(230, 43, 30, 0.05); }
+        .type-input.error { border-bottom-color: var(--accent-red); color: var(--accent-red); animation: shake 0.4s; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+        #confetti { position: absolute; inset: 0; pointer-events: none; z-index: 100; }
+        .hide { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div id="mobile-app">
+        <!-- Header -->
+        <header class="p-5 flex flex-col">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded bg-[#111] border border-[var(--accent-red)] flex items-center justify-center"><i class="fas fa-microphone text-[var(--accent-red)]"></i></div>
+                    <div>
+                        <h1 class="font-impact font-bold text-xl leading-tight text-white tracking-widest">SPEAKER LOG</h1>
+                        <p class="text-[10px] text-[var(--text-muted)] uppercase tracking-widest font-bold">Homework Protocol</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span id="q-counter" class="text-xs font-code text-gray-400 font-bold tracking-widest bg-[#111] border border-[#333] px-2 py-1 rounded">01/15</span>
+                </div>
+            </div>
+            <div class="progress-track">
+                <div id="progress" class="progress-fill" style="width: 0%;"></div>
+            </div>
+        </header>
+
+        <main id="app-main" class="flex flex-col justify-center">
+            
+            <div id="screen-welcome" class="text-center question-card border-t-2 border-[var(--accent-red)]">
+                <div class="w-20 h-20 bg-black rounded-full flex items-center justify-center mx-auto mb-6 border border-[#333] shadow-inner">
+                    <i class="fas fa-heartbeat text-3xl text-[var(--accent-red)]"></i>
+                </div>
+                <h2 class="text-3xl font-impact tracking-widest mb-3 text-white">Script Review</h2>
+                <p class="text-[14px] text-[var(--text-muted)] mb-8 leading-relaxed">Review your presentation notes. Master Gerunds and Infinitives to speak with confidence.</p>
+                <div class="text-left bg-black p-4 rounded mb-8 border border-[#333]">
+                    <p class="text-[11px] font-code text-[var(--accent-green)] font-bold tracking-wide"><i class="fas fa-check-circle mr-2"></i> Clean: "Instead of scrolling..."</p>
+                    <p class="text-[11px] font-code text-[var(--accent-red)] mt-3 font-bold tracking-wide"><i class="fas fa-times-circle mr-2"></i> Bug: "Instead of scroll..."</p>
+                </div>
+                <button onclick="startGame()" class="btn-primary">Open Teleprompter</button>
+            </div>
+
+            <div id="screen-quiz" class="hide flex flex-col justify-center h-full"></div>
+
+            <div id="screen-result" class="hide text-center question-card border-t-2 border-[var(--accent-green)]">
+                <div class="w-24 h-24 bg-[var(--accent-green)]/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-[var(--accent-green)]/50 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
+                    <i class="fas fa-check-double text-5xl text-[var(--accent-green)]"></i>
+                </div>
+                <h2 class="text-4xl font-impact tracking-widest text-white mb-2">SCRIPT PERFECT</h2>
+                <p class="text-[15px] text-[var(--text-muted)] mb-8">You have successfully reviewed 15 entries and mastered the Social Health protocol.</p>
+                
+                <div class="bg-black p-6 rounded border border-[#333] mb-8">
+                    <p class="text-[11px] uppercase font-bold text-[var(--text-muted)] tracking-widest mb-2">Accuracy Rate</p>
+                    <p id="final-score" class="text-5xl font-impact tracking-wider text-white">100%</p>
+                </div>
+            </div>
+
+        </main>
+
+        <canvas id="confetti"></canvas>
+    </div>
+
+    <script>
+        const exercises = [
+            { type: 'ab', context: 'Prepositions', bug: 'Instead of watch TV, read a book.', clean: 'Instead of watching TV, read a book.' },
+            { type: 'ab', context: 'Infinitive of Purpose', bug: 'I exercise for to stay healthy.', clean: 'I exercise to stay healthy.' },
+            { type: 'input', context: 'Vocabulary', corrupted: 'A medical condition affecting the brain is [ m e n a i e d t ].', expected: 'dementia', hint: 'Unscramble the word' },
+            { type: 'input', context: 'Gerund', corrupted: 'He went weeks without [see] his friends.', expected: 'seeing', hint: 'Type the -ing form' },
+            { type: 'ab', context: 'Prepositions', bug: 'She is passionate about connect with others.', clean: 'She is passionate about connecting with others.' },
+            { type: 'input', context: 'Sentence Builder', corrupted: '[instead / scrolling / of], text a friend.', expected: 'instead of scrolling', hint: 'Type the phrase' },
+            { type: 'ab', context: 'Infinitive of Purpose', bug: 'We use social media for connecting.', clean: 'We use social media to connect.' },
+            { type: 'input', context: 'Vocabulary', corrupted: 'To recover quickly means you are [ r s e e n i l t i ].', expected: 'resilient', hint: 'Unscramble the word' },
+            { type: 'ab', context: 'Gerunds', bug: 'Juggling jobs is hard without complain.', clean: 'Juggling jobs is hard without complaining.' },
+            { type: 'input', context: 'Sentence Builder', corrupted: 'I aim [interact / to] with 5 people.', expected: 'to interact', hint: 'Type the phrase' },
+            { type: 'ab', context: 'Vocabulary', bug: 'Mental health is still a taboo.', clean: 'Mental health is still a taboo.' }, // Both same (it's a trick, make bug obvious)
+            { type: 'input', context: 'Prepositions', corrupted: 'I am interested in [improve] my health.', expected: 'improving', hint: 'Type the -ing form' },
+            { type: 'ab', context: 'Gerunds', bug: 'Instead of isolate myself, I will call you.', clean: 'Instead of isolating myself, I will call you.' },
+            { type: 'input', context: 'Sentence Builder', corrupted: 'We need connection [thrive / to].', expected: 'to thrive', hint: 'Type the phrase' },
+            { type: 'ab', context: 'Prepositions', bug: 'Thank you for help me.', clean: 'Thank you for helping me.' }
+        ];
+
+        // Fixing the trick question to have a clear bug
+        exercises[10].bug = 'Mental health is still a tabu.';
+        exercises[10].clean = 'Mental health is still a taboo.';
+
+        let state = { current: 0, errors: 0 };
+
+        function startGame() {
+            document.getElementById('screen-welcome').classList.add('hide');
+            document.getElementById('screen-quiz').classList.remove('hide');
+            renderQuestion();
+        }
+
+        function updateProgress() {
+            const perc = (state.current / exercises.length) * 100;
+            document.getElementById('progress').style.width = perc + '%';
+            document.getElementById('q-counter').innerText = `${String(state.current + 1).padStart(2, '0')}/${exercises.length}`;
+        }
+
+        function shuffleArray(array) {
+            let curId = array.length;
+            while (0 !== curId) { let randId = Math.floor(Math.random() * curId); curId -= 1; let tmp = array[curId]; array[curId] = array[randId]; array[randId] = tmp; }
+            return array;
+        }
+
+        function renderQuestion() {
+            if (state.current >= exercises.length) return endHomework();
+            
+            updateProgress();
+            const ex = exercises[state.current];
+            const container = document.getElementById('screen-quiz');
+            
+            let html = `
+                <div class="question-card" id="q-card">
+                    <p class="text-[10px] text-[var(--accent-red)] font-bold uppercase tracking-widest font-code mb-4 bg-black inline-block px-3 py-1 rounded border border-[#333]"><i class="fas fa-quote-left mr-2"></i>${ex.context}</p>
+            `;
+
+            if (ex.type === 'ab') {
+                const opts = shuffleArray([
+                    { text: ex.clean, isCorrect: true },
+                    { text: ex.bug, isCorrect: false }
+                ]);
+
+                html += `
+                    <h2 class="text-xl font-bold text-white mb-6 leading-snug">Select the correct grammar syntax:</h2>
+                    <div class="space-y-3" id="ab-opts">
+                        <button onclick="handleAB(this, ${opts[0].isCorrect})" class="opt-btn"><span>${opts[0].text}</span><i class="fas fa-circle text-[#333] text-xs icon-status"></i></button>
+                        <button onclick="handleAB(this, ${opts[1].isCorrect})" class="opt-btn"><span>${opts[1].text}</span><i class="fas fa-circle text-[#333] text-xs icon-status"></i></button>
+                    </div>
+                `;
+            } else if (ex.type === 'input') {
+                html += `
+                    <h2 class="text-xl font-bold text-white mb-4 leading-snug">Fix the script error:</h2>
+                    <p class="text-[var(--accent-red)] font-code text-sm mb-6 bg-black p-4 rounded text-center border border-[#333] shadow-inner leading-relaxed">${ex.corrupted}</p>
+                    <input type="text" id="type-ans" class="type-input" placeholder="${ex.hint}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                    <button id="btn-submit" onclick="handleInput('${esc(ex.expected)}')" class="btn-primary mt-2">Update Script</button>
+                `;
+            }
+
+            html += `</div>`;
+            container.innerHTML = html;
+
+            if (ex.type === 'input') {
+                const inputEl = document.getElementById('type-ans');
+                inputEl.focus();
+                inputEl.addEventListener('keypress', function(e) { if (e.key === 'Enter') document.getElementById('btn-submit').click(); });
+            }
+        }
+
+        function handleAB(btn, isCorrect) {
+            const buttons = document.getElementById('ab-opts').querySelectorAll('button');
+            buttons.forEach(b => { b.onclick = null; b.style.opacity = '0.6'; });
+            btn.style.opacity = '1';
+
+            const icon = btn.querySelector('.icon-status');
+
+            if (isCorrect) {
+                btn.classList.add('selected-correct');
+                icon.className = 'fas fa-check-circle text-[var(--accent-green)] text-xl icon-status drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]';
+                setTimeout(nextQuestion, 700);
+            } else {
+                btn.classList.add('selected-error');
+                icon.className = 'fas fa-times-circle text-[var(--accent-red)] text-xl icon-status';
+                state.errors++;
+                buttons.forEach(b => {
+                    if(!b.classList.contains('selected-error')) {
+                        b.classList.add('selected-correct'); b.style.opacity = '1';
+                        b.querySelector('.icon-status').className = 'fas fa-check-circle text-[var(--accent-green)] text-xl icon-status';
+                    }
+                });
+                setTimeout(nextQuestion, 1800);
+            }
+        }
+
+        function handleInput(expected) {
+            const input = document.getElementById('type-ans');
+            const val = input.value.trim().toLowerCase();
+            const btn = document.getElementById('btn-submit');
+            
+            const expectedLower = expected.toLowerCase();
+            const isMatch = (val === expectedLower);
+
+            if (isMatch) {
+                input.style.borderColor = 'var(--accent-green)';
+                input.style.color = '#10b981';
+                input.style.backgroundColor = 'rgba(16,185,129,0.1)';
+                btn.style.background = 'var(--accent-green)';
+                btn.innerHTML = '<i class="fas fa-check"></i> Verified';
+                setTimeout(nextQuestion, 700);
+            } else {
+                input.classList.remove('error');
+                void input.offsetWidth;
+                input.classList.add('error');
+                input.value = '';
+                input.placeholder = "Try again!";
+                state.errors++;
+            }
+        }
+
+        function nextQuestion() { state.current++; renderQuestion(); }
+
+        function endHomework() {
+            document.getElementById('screen-quiz').classList.add('hide');
+            document.getElementById('screen-result').classList.remove('hide');
+            document.getElementById('progress').style.width = '100%';
+            document.getElementById('q-counter').innerText = 'DONE';
+
+            const accuracy = Math.max(0, 100 - (state.errors * 5));
+            const scoreEl = document.getElementById('final-score');
+            scoreEl.innerText = `${accuracy}%`;
+            
+            if(accuracy < 70) {
+                scoreEl.className = "text-5xl font-impact tracking-wider text-[var(--accent-red)]";
+                document.querySelector('.fa-check-double').className = "fas fa-skull text-5xl text-[var(--accent-red)]";
+                document.querySelector('.fa-check-double').parentElement.className = "w-24 h-24 bg-[var(--accent-red)]/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-[var(--accent-red)]/50 shadow-[0_0_30px_rgba(230,43,30,0.3)]";
+            }
+
+            shootConfetti();
+        }
+
+        function shootConfetti() {
+            const cCanvas = document.getElementById('confetti'); const cCtx = cCanvas.getContext('2d');
+            cCanvas.width = document.getElementById('mobile-app').offsetWidth; cCanvas.height = document.getElementById('mobile-app').offsetHeight;
+            const pieces = []; const colors = ['#e62b1e', '#ffffff', '#333333']; 
+            for(let i=0; i<50; i++) pieces.push({ x: cCanvas.width/2, y: cCanvas.height/2, vx: (Math.random()-0.5)*15, vy: (Math.random()-1)*15-5, size: Math.random()*6+3, color: colors[Math.floor(Math.random()*colors.length)], rot: Math.random()*360, rotSpeed: (Math.random()-0.5)*10 });
+            function animateC() {
+                cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height); let active = false;
+                pieces.forEach(p => {
+                    p.x += p.vx; p.y += p.vy; p.vy += 0.5; p.rot += p.rotSpeed; if(p.y < cCanvas.height) active = true;
+                    cCtx.save(); cCtx.translate(p.x, p.y); cCtx.rotate(p.rot*Math.PI/180); cCtx.fillStyle = p.color; 
+                    cCtx.fillRect(-p.size/2, -p.size/2, p.size, p.size); cCtx.restore();
+                });
+                if(active) requestAnimationFrame(animateC); else cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height);
+            }
+            animateC();
+        }
+    </script>
+</body>
+</html>
